@@ -2,7 +2,10 @@
 # ## 1. Import Libraries 
 
 # %%
+from dataclasses import asdict, dataclass
+import os
 from pathlib import Path 
+from typing import Any
 import torch 
 import polars as pl
 from PIL import Image 
@@ -15,6 +18,39 @@ MODEL_PATH = BASE_DIR / "models" / "best_food_model.pth"
 RECIPE_DATA_DIR = BASE_DIR / "data" / "raw" / "receiptfood_dataset" 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else "cpu" 
+MIN_CONFIDENCE = float(os.getenv("SNAPCHEF_MIN_CONFIDENCE", "0.70"))
+MIN_MARGIN = float(os.getenv("SNAPCHEF_MIN_MARGIN", "0.20"))
+TOP_K = 3
+
+
+@dataclass(frozen=True)
+class PredictionCandidate:
+    """One model candidate with a probability in the 0-1 range."""
+
+    label: str
+    confidence: float
+
+
+@dataclass(frozen=True)
+class PredictionResult:
+    """Prediction enriched with an abstention decision and alternatives."""
+
+    label: str
+    is_known: bool
+    confidence: float
+    margin: float
+    candidates: list[PredictionCandidate]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            **asdict(self),
+            "candidates": [asdict(candidate) for candidate in self.candidates],
+        }
+
+
+def decide_known(confidence: float, margin: float) -> bool:
+    """Apply the lightweight confidence guardrails used during inference."""
+    return confidence >= MIN_CONFIDENCE and margin >= MIN_MARGIN
 
 # Transformation for inference
 inference_transform = transforms.Compose([
@@ -73,20 +109,38 @@ class RecipeRecommender:
         df = df.rename(rename_dict)
         return df
 
-    def predict_image(self, image_path: Path):
-        """Predict the food label from an image file."""
+    def classify_image(self, image_path: Path) -> PredictionResult:
+        """Return top candidates and abstain when the result is ambiguous."""
         image = Image.open(image_path).convert("RGB")
         input_tensor = inference_transform(image).unsqueeze(0).to(self.device)
 
-        with torch.no_grad():
+        with torch.inference_mode():
             outputs = self.model(input_tensor)
-            probabilities = torch.softmax(outputs, dim=1)
-            confidence, predicted_idx = torch.max(probabilities, 1)
+            probabilities = torch.softmax(outputs, dim=1)[0]
 
-        predicted_class = self.class_names[predicted_idx.item()]
-        confidence_score = confidence.item() * 100
+        count = min(TOP_K, len(self.class_names))
+        confidences, indices = torch.topk(probabilities, k=count)
+        candidates = [
+            PredictionCandidate(self.class_names[index.item()], confidence.item())
+            for confidence, index in zip(confidences, indices)
+        ]
+        top_confidence = candidates[0].confidence
+        runner_up = candidates[1].confidence if len(candidates) > 1 else 0.0
+        margin = top_confidence - runner_up
+        is_known = decide_known(top_confidence, margin)
 
-        return predicted_class, confidence_score
+        return PredictionResult(
+            label=candidates[0].label if is_known else "unknown",
+            is_known=is_known,
+            confidence=top_confidence,
+            margin=margin,
+            candidates=candidates,
+        )
+
+    def predict_image(self, image_path: Path):
+        """Backward-compatible top-1 prediction returning confidence percent."""
+        prediction = self.classify_image(image_path)
+        return prediction.label, prediction.confidence * 100
 
     def get_recipe(self, food_name: str) -> pl.DataFrame:
         """Find recipe details based on the predicted food name using Polars expressions."""
@@ -114,18 +168,23 @@ class RecipeRecommender:
     def recommend(self, image_path: Path):
         """Main pipeline: Image Input -> Prediction -> Recipe Recommendation."""
         print(f"\n Analyzing image: {image_path.name}...")
-        predicted_food, confidence = self.predict_image(image_path)
+        prediction = self.classify_image(image_path)
+        predicted_food = prediction.label
+        confidence = prediction.confidence * 100
         
         print(f" Predicted Food : {predicted_food.upper()} (Confidence: {confidence:.2f}%)")
         print("-" * 50)
 
-        recipes = self.get_recipe(predicted_food)
+        recipes = self.get_recipe(predicted_food) if prediction.is_known else pl.DataFrame()
 
         if not recipes.is_empty():
             print(f" Found {len(recipes)} matching recipes:")
             return {
                 "food_name": predicted_food,
                 "confidence": confidence,
+                "is_known": prediction.is_known,
+                "margin": prediction.margin,
+                "top_candidates": [asdict(candidate) for candidate in prediction.candidates],
                 "recipes": recipes
             }
         else:
@@ -133,6 +192,9 @@ class RecipeRecommender:
             return {
                 "food_name": predicted_food,
                 "confidence": confidence,
+                "is_known": prediction.is_known,
+                "margin": prediction.margin,
+                "top_candidates": [asdict(candidate) for candidate in prediction.candidates],
                 "recipes": None
             }
 

@@ -3,6 +3,7 @@
 
 # %%
 from pathlib import Path
+from datetime import datetime, timezone
 import time
 import torch
 import torch.nn as nn
@@ -123,7 +124,17 @@ def run_training():
             torch.save({
                 'model_state_dict': model.state_dict(),
                 'class_names': class_names,
-                'num_classes': num_classes
+                'num_classes': num_classes,
+                'validation_accuracy': val_acc,
+                'validation_loss': val_loss,
+                'epoch': epoch + 1,
+                'image_size': (224, 224),
+                'normalization': {
+                    'mean': [0.485, 0.456, 0.406],
+                    'std': [0.229, 0.224, 0.225],
+                },
+                'model_architecture': 'mobilenet_v3_small',
+                'created_at': datetime.now(timezone.utc).isoformat(),
             }, save_path)
             print(f"  --> Saved new best model (Val Acc: {val_acc*100:.2f}%) to {save_path.name}")
 
