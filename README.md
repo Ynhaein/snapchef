@@ -1,154 +1,159 @@
 # SnapChef
 
-SnapChef is a food-image classification and recipe recommendation project. Given a food image, the current machine-learning pipeline predicts the most likely food class and searches the local Food.com dataset for matching recipes.
+SnapChef is a full-stack food analysis application that classifies an uploaded food image and recommends matching recipes. The current implementation combines a React single-page interface with a FastAPI service backed by a fine-tuned MobileNetV3 model.
 
-The project is currently in its first stage: developing and evaluating the image classifier. Website integration, camera input, and Progressive Web App support are planned for later stages.
+The bundled checkpoint reaches **84.90% validation accuracy** across 10 supported Food-101 classes: bread pudding, chicken curry, donuts, garlic bread, gnocchi, samosa, sashimi, seaweed salad, spaghetti carbonara, and takoyaki. Images outside these classes may be returned as `unknown` when confidence or prediction margin is too low.
 
-## Current Status
+## Current Features
 
-- Architecture: MobileNetV3 Small with transfer learning
-- Input size: 224 × 224 RGB images
-- Supported classes: 10
-- Test accuracy: 84.90% on the current 1,000-image test split
-- Included checkpoint: `snapchef-ai/models/best_food_model.pth`
-- Inference output: top-three candidates with confidence and an optional `unknown` result
+- Drag-and-drop or file-picker image upload for JPEG, PNG, and WebP files up to 5 MB.
+- Food classification with confidence, top-three candidates, and unknown-image handling.
+- Up to five ranked recipe recommendations with ingredients and instructions.
+- Responsive React interface connected to the FastAPI prediction endpoint.
+- Backend and frontend automated tests.
 
-The model currently supports:
+## Technology Stack
 
-`bread_pudding`, `chicken_curry`, `donuts`, `garlic_bread`, `gnocchi`, `samosa`, `sashimi`, `seaweed_salad`, `spaghetti_carbonara`, and `takoyaki`.
-
-Images outside these classes may be marked as `unknown`, but an unsupported food can still receive an incorrect high-confidence prediction. The current confidence guardrail is not a complete out-of-distribution detector.
+- **AI/API:** Python 3.12, PyTorch, Torchvision, FastAPI, Polars, and Uvicorn.
+- **Frontend:** React 19, Vite 8, Tailwind CSS 4, shadcn/Base UI components, and Hugeicons.
+- **Testing:** Python `unittest`, Vitest, and Testing Library.
+- **Package managers:** `uv` for Python and `pnpm` for the frontend.
 
 ## Project Structure
 
 ```text
 snapchef/
-├── README.md
-└── snapchef-ai/
-    ├── data/                         # Local datasets; excluded from Git
-    ├── models/
-    │   └── best_food_model.pth       # Current trained checkpoint
-    ├── src/snapchef_ai/
-    │   ├── dataset.py                # Data loading and image transforms
-    │   ├── evaluate.py               # Overall and per-class evaluation
-    │   ├── model.py                  # MobileNetV3 classifier
-    │   ├── recommend.py              # Inference and recipe matching
-    │   └── train.py                  # Training and checkpoint creation
-    ├── tests/
-    ├── pyproject.toml
-    └── uv.lock
+|-- DESIGN.md                  # UI palette and content guidance
+|-- snapchef-ai/
+|   |-- data/raw/              # Local image and recipe datasets
+|   |-- models/                # Model checkpoints
+|   |-- src/snapchef_ai/       # Training, inference, recipes, and API
+|   `-- tests/                 # Backend unit tests
+`-- web/
+    |-- public/                # Static assets
+    `-- src/
+        |-- components/        # Feature components
+        |   `-- ui/            # Reusable UI primitives
+        |-- layouts/           # Shared page layouts
+        |-- lib/               # API client and formatting helpers
+        `-- tests/             # Frontend tests
 ```
 
 ## Prerequisites
 
 Install the following tools before starting:
 
-- [Git](https://git-scm.com/)
-- [Python 3.12 or newer](https://www.python.org/downloads/)
-- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- Python 3.12 or newer
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/)
+- Node.js 20.19+ or 22.12+
+- [`pnpm`](https://pnpm.io/installation)
+- Git
 
-CUDA is optional. PyTorch automatically uses a supported GPU when one is available and otherwise runs on the CPU.
+## Dataset Setup
 
-## Setup
+Datasets are intentionally excluded from Git. Download both sources:
 
-### 1. Clone the repository
+1. [Food-101 Resized](https://www.kaggle.com/datasets/ekojsalim/food-101-resized) for image classification.
+2. [Food.com Recipes and Reviews](https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews) for recipe recommendations.
 
-```bash
-git clone <repository-url>
-cd snapchef/snapchef-ai
-```
-
-Replace `<repository-url>` with this repository's Git URL. If your cloned directory has a different name, adjust the `cd` command accordingly.
-
-### 2. Install the Python dependencies
-
-```bash
-uv sync
-```
-
-This creates a local virtual environment and installs the exact dependency versions recorded in `uv.lock`.
-
-### 3. Download the image dataset
-
-Download [Food-101 Resized](https://www.kaggle.com/datasets/ekojsalim/food-101-resized) from Kaggle. From its 224-pixel training and test splits, copy the 10 supported class directories into this structure:
+Extract the image dataset so the selected class folders are under:
 
 ```text
 snapchef-ai/data/raw/imagefood_dataset/224/
-├── train/
-│   ├── bread_pudding/
-│   ├── chicken_curry/
-│   └── ...the remaining supported classes
-└── test/
-    ├── bread_pudding/
-    ├── chicken_curry/
-    └── ...the remaining supported classes
+|-- train/<class_name>/*.{jpg,jpeg,png,webp}
+`-- test/<class_name>/*.{jpg,jpeg,png,webp}
 ```
 
-Directory names must match the supported class names exactly. The current dataset contains 900 training images and 100 test images per class.
+Folder names must match the supported class names above, using underscores. Place the recipe data at `snapchef-ai/data/raw/receiptfood_dataset/recipes.parquet` (preferred) or `snapchef-ai/data/raw/receiptfood_dataset/recipes.csv`. The application does not currently use the reviews file.
 
-### 4. Download the recipe dataset
+Do not commit downloaded datasets. Coordinate with collaborators before replacing `snapchef-ai/models/best_food_model.pth`.
 
-Download [Food.com Recipes and Reviews](https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews) from Kaggle. Extract at least `recipes.csv` into:
+## Setup
 
-```text
-snapchef-ai/data/raw/receiptfood_dataset/
-└── recipes.csv
-```
+1. Clone the repository and enter it:
 
-`reviews.csv` is not required by the current recommendation pipeline. Dataset files are intentionally excluded from Git because of their size.
+   ```bash
+   git clone <repository-url>
+   cd snapchef
+   ```
 
-### 5. Verify the installation
+2. Install backend dependencies:
 
-Run the automated tests:
+   ```bash
+   cd snapchef-ai
+   uv sync
+   ```
+
+3. Add the datasets using the structure described above. The existing checkpoint can be used immediately; retraining is not required for normal development.
+
+4. Install frontend dependencies:
+
+   ```bash
+   cd ../web
+   pnpm install
+   ```
+
+5. Optionally create `web/.env.local` when the API is hosted elsewhere:
+
+   ```dotenv
+   VITE_API_BASE_URL=http://127.0.0.1:8000
+   ```
+
+## Run Locally
+
+Start the API from `snapchef-ai/`:
 
 ```bash
-uv run python -m unittest discover -s tests -v
+uv run uvicorn snapchef_ai.api:app --reload
 ```
 
-Evaluate the included checkpoint against the local test split:
+The API is available at `http://127.0.0.1:8000`; interactive documentation is at `http://127.0.0.1:8000/docs`.
+
+In a second terminal, start the frontend from `web/`:
 
 ```bash
-uv run python -m snapchef_ai.evaluate
+pnpm dev
 ```
 
-The current checkpoint should report an overall accuracy of approximately 84.90% when evaluated against the expected test dataset.
+Open `http://localhost:5173` and upload a supported food image.
 
-## Running Inference
+## Validation and Build Commands
 
-The inference module selects the first available image from the test dataset and prints its prediction and matching recipe preview:
+From `snapchef-ai/`:
 
 ```bash
-uv run python -m snapchef_ai.recommend
+uv run python -m unittest discover -s tests -v  # Run backend tests
+uv run python -m snapchef_ai.evaluate           # Evaluate the checkpoint
+uv run python -m snapchef_ai.train              # Retrain and save the best model
+uv build                                        # Build the Python package
 ```
 
-The existing checkpoint is ready to use, so retraining is not required for normal evaluation or inference.
-
-The abstention thresholds can be changed through environment variables:
-
-```text
-SNAPCHEF_MIN_CONFIDENCE=0.70
-SNAPCHEF_MIN_MARGIN=0.20
-```
-
-## Training
-
-To train a new model using the prepared training and test directories, run:
+From `web/`:
 
 ```bash
-uv run python -m snapchef_ai.train
+pnpm test     # Run frontend tests once
+pnpm lint     # Run Oxlint
+pnpm build    # Create the production bundle
+pnpm preview  # Preview the production bundle
 ```
 
-Training may download pretrained torchvision weights. When validation accuracy improves, the script replaces `models/best_food_model.pth`. Coordinate with other contributors before committing a new checkpoint, and record the dataset or training changes that produced it.
+## Configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | `http://127.0.0.1:8000` | Backend URL used by the frontend. |
+| `SNAPCHEF_CORS_ORIGINS` | Local Vite origins | Comma-separated allowed browser origins. |
+| `SNAPCHEF_MIN_CONFIDENCE` | Application default | Minimum confidence for a known prediction. |
+| `SNAPCHEF_MIN_MARGIN` | Application default | Minimum margin between the top two classes. |
+
+## API Overview
+
+- `GET /health` checks service and model readiness.
+- `GET /api/classes` lists supported food classes.
+- `POST /api/predict` accepts an image and returns the prediction, top candidates, and recipe recommendations.
 
 ## Roadmap
 
-1. Build and evaluate the machine-learning model and serving API.
-2. Integrate prediction and recipe results into a website frontend.
-3. Add camera capture and package the website as a Progressive Web App.
-
-## Collaboration Notes
-
-- Do not commit the local `data/` directory.
-- Keep preprocessing consistent between training and inference.
-- Run the unit tests and evaluator before submitting model-related changes.
-- Document changes to classes, transforms, hyperparameters, or checkpoints in the pull request.
+- **Stage 1:** Build the classification model, recommendation pipeline, and FastAPI service.
+- **Stage 2:** Integrate and refine the React web interface (current stage).
+- **Stage 3:** Add camera capture and Progressive Web App capabilities.
