@@ -57,55 +57,93 @@ function SnapChefPage() {
     setError('')
     try {
       const payload = await analyzeFood(file, controller.signal)
+      if (!payload?.prediction || !Array.isArray(payload.recipes)) {
+        throw new Error('SnapChef received an unexpected response. Please try again.')
+      }
       setResult(payload)
       setStatus(payload.prediction.is_known ? 'known' : 'unknown')
       window.setTimeout(() => document.querySelector('[aria-live="polite"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50)
     } catch (requestError) {
       if (requestError.name === 'AbortError') return
+      setResult(null)
       setError(requestError.message)
       setStatus('error')
     }
   }
 
   return (
-    <main id="top" className="mx-auto w-full max-w-6xl space-y-14 px-4 py-10 sm:px-6 sm:py-14">
-      <section className="mx-auto max-w-3xl text-center">
-        <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">AI-powered culinary discovery</span>
-        <h1 className="mt-5 font-heading text-4xl font-bold leading-tight sm:text-5xl">Turn a food photo into something worth cooking.</h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-          Upload a photo of a dish and SnapChef will identify the closest supported food, then suggest recipes you can try at home.
-        </p>
+    <main id="top" className="page-shell">
+      <section className="hero-band">
+        <div className="hero-copy">
+          <h1>Turn a food photo into something worth cooking.</h1>
+          <p className="hero-lede">
+            Upload a dish and SnapChef will find the closest supported food, then point you toward a recipe for the kitchen.
+          </p>
+          <div className="hero-rail" aria-label="SnapChef workflow">
+            <span className="rail-step is-active">Upload</span>
+            <span className="rail-line" />
+            <span className="rail-step">Read</span>
+            <span className="rail-line" />
+            <span className="rail-step">Cook</span>
+          </div>
+          <a className="hero-link" href="#analyze">Start with a photo <span aria-hidden="true">↓</span></a>
+        </div>
+        <div className="hero-station">
+          <div className="station-header">
+            <span>Photo intake</span>
+            <span>01 / 03</span>
+          </div>
+          <UploadWorkspace
+            file={file}
+            previewUrl={previewUrl}
+            isAnalyzing={status === 'analyzing'}
+            onFile={selectFile}
+            onAnalyze={submit}
+            onRemove={removeFile}
+            onValidationError={(message) => { setError(message); setStatus('error') }}
+            inputRef={inputRef}
+          />
+        </div>
       </section>
 
-      <UploadWorkspace
-        file={file}
-        previewUrl={previewUrl}
-        isAnalyzing={status === 'analyzing'}
-        onFile={selectFile}
-        onAnalyze={submit}
-        onRemove={removeFile}
-        onValidationError={(message) => { setError(message); setStatus('error') }}
-        inputRef={inputRef}
-      />
+      <div className="content-grid">
+        <aside className="sidebar">
+          <SupportedFoods />
+          <div className="sidebar-note">
+            <p className="sidebar-note-title">A focused read</p>
+            <p>SnapChef looks for the closest match among 10 food categories, not every dish in the world.</p>
+          </div>
+        </aside>
 
-      {error && (
-        <Alert variant="destructive">
-          <HugeiconsIcon icon={Alert02Icon} />
-          <AlertTitle>We could not analyze this photo</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-          <AlertAction>
-            <Button variant="ghost" size="sm" onClick={() => { setError(''); setStatus(file ? 'selected' : 'idle') }}>
-              Try again
-            </Button>
-          </AlertAction>
-        </Alert>
-      )}
-      {status === 'analyzing' && <AnalysisSkeleton />}
-      {result && status !== 'analyzing' && <AnalysisResult prediction={result.prediction} />}
-      {result?.prediction.is_known && (
-        <RecipeCollection foodName={result.prediction.label} recipes={result.recipes} onOpenRecipe={setActiveRecipe} />
-      )}
-      <SupportedFoods />
+        <section className="workflow-column" aria-label="SnapChef analysis workflow">
+          {error && (
+            <Alert variant="destructive" className="workflow-alert">
+              <HugeiconsIcon icon={Alert02Icon} />
+              <AlertTitle>We could not analyze this photo</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+              <AlertAction>
+                <Button className="proof-button proof-button-danger" size="sm" onClick={() => { setError(''); setStatus(file ? 'selected' : 'idle') }}>
+                  Try again
+                </Button>
+              </AlertAction>
+            </Alert>
+          )}
+          {status === 'analyzing' && <AnalysisSkeleton />}
+          {result && status !== 'analyzing' && <AnalysisResult prediction={result.prediction} />}
+          {result?.prediction.is_known && (
+            <RecipeCollection foodName={result.prediction.label} recipes={result.recipes} onOpenRecipe={setActiveRecipe} />
+          )}
+          {!result && status === 'idle' && (
+            <div className="workflow-empty">
+              <span className="workflow-empty-mark">02</span>
+              <div>
+                <h2>Your read will land here.</h2>
+                <p>Choose a supported dish photo above and we&apos;ll show the closest match, its confidence, and recipe ideas.</p>
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
       <RecipeDialog recipe={activeRecipe} onClose={() => setActiveRecipe(null)} />
     </main>
   )

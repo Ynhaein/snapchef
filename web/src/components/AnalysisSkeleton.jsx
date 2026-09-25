@@ -1,22 +1,24 @@
-import { Card, CardContent } from '@/components/ui/Card'
-import { Skeleton } from '@/components/ui/Skeleton'
-
 export default function AnalysisSkeleton() {
   return (
-    <Card aria-live="polite" aria-busy="true" className="border border-border">
-      <CardContent className="grid gap-6 p-6 md:grid-cols-2">
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-6 w-36" />
+    <section aria-live="polite" aria-busy="true" className="analysis-board skeleton-board">
+      <div className="section-bar">
+        <h2>Reading your dish</h2>
+        <span className="section-meta">In progress</span>
+      </div>
+      <div className="skeleton-layout">
+        <div className="skeleton-readout">
+          <span className="skeleton-line short" />
+          <span className="skeleton-line title" />
+          <span className="skeleton-line meter" />
         </div>
-        <div className="space-y-3">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+        <div className="skeleton-candidates">
+          <span className="skeleton-candidate" />
+          <span className="skeleton-candidate" />
+          <span className="skeleton-candidate" />
         </div>
-        <p className="text-sm font-medium text-muted-foreground">Analyzing your dish…</p>
-      </CardContent>
-    </Card>
+      </div>
+      <p className="skeleton-message">Analyzing your dish…</p>
+      <p className="skeleton-note">Comparing the photo with SnapChef&apos;s supported food categories.</p>
+    </section>
   )
 }

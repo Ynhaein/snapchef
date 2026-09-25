@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 
 const MainLayout = ({ onUpload }) => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="site-shell">
       <Header onUpload={onUpload} />
       <Outlet />
       <Footer />

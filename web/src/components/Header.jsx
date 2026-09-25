@@ -5,21 +5,20 @@ import { Button } from '@/components/ui/Button'
 
 export default function Header({ onUpload }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="flex items-center gap-2.5" aria-label="SnapChef home">
-          <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <HugeiconsIcon icon={ChefHatIcon} strokeWidth={2} />
-          </span>
-          <span className="font-heading text-2xl font-bold">SnapChef</span>
+    <header className="site-header">
+      <div className="site-header-inner">
+        <a href="#top" className="brand-lockup" aria-label="SnapChef home">
+          <span className="brand-mark"><HugeiconsIcon icon={ChefHatIcon} /></span>
+          <span className="brand-wordmark">SnapChef</span>
         </a>
-        <nav className="hidden items-center gap-7 text-sm font-medium md:flex" aria-label="Main navigation">
-          <a className="text-primary" href="#analyze">Analyze</a>
-          <a className="text-muted-foreground hover:text-foreground" href="#supported-foods">Supported foods</a>
+        <p className="header-context" aria-label="SnapChef workflow">photo <strong>→</strong> reading <strong>→</strong> recipe</p>
+        <nav className="header-nav" aria-label="Main navigation">
+          <a href="#analyze">Analyze</a>
+          <a href="#supported-foods">Supported foods</a>
         </nav>
-        <Button size="lg" onClick={onUpload}>
+        <Button className="proof-button proof-button-primary" size="sm" onClick={onUpload}>
           <HugeiconsIcon icon={Upload04Icon} data-icon="inline-start" />
-          Upload photo
+          Choose photo
         </Button>
       </div>
     </header>

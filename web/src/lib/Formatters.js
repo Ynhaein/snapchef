@@ -11,9 +11,10 @@ export function formatPercent(value) {
 
 export function formatDuration(value) {
   if (!value) return 'Not available'
-  const match = /^PT(?:(\d+)H)?(?:(\d+)M)?$/.exec(value)
-  if (!match) return value
+  const match = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(value)
+  if (!match) return 'Not available'
   const hours = Number(match[1] ?? 0)
   const minutes = Number(match[2] ?? 0)
-  return [hours && `${hours} hr`, minutes && `${minutes} min`].filter(Boolean).join(' ')
+  const parts = [hours && `${hours} hr`, minutes && `${minutes} min`].filter(Boolean)
+  return parts.length ? parts.join(' ') : 'Not available'
 }
