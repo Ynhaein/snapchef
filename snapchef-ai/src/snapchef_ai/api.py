@@ -145,16 +145,9 @@ async def predict_recipe(file: UploadFile = File(...)):
         route = route_prediction(detected_items, result["prediction"], labels)
 
         recipes = result["recipes"] if route["path"] == "dish" else []
-        recommendations: list[dict[str, Any]] = []
-        if route["path"] == "ingredient":
-            try:
-                recommendations = await asyncio.to_thread(
-                    lambda: get_engine().recommend(route["ingredient_labels"])[
-                        "recommendations"
-                    ]
-                )
-            except FileNotFoundError:
-                recommendations = []
+        recommendations: list[
+            dict[str, Any]
+        ] = []  # candidate suggester: never auto-recommend unconfirmed visual predictions
 
         return {
             "status": "success",

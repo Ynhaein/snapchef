@@ -45,7 +45,8 @@ def iou(a, b):
 
 
 def normalize_box(box, width, height):
-    return [box[0] / width, box[1] / height, box[2] / width, box[3] / height]
+    x, y, w, h = box
+    return [x / width, y / height, (x + w) / width, (y + h) / height]
 
 
 def collect_candidates(annotation_path, targets):
@@ -263,11 +264,14 @@ def select_thresholds(prepared_by_target, targets):
 
 
 def main():
+    global IOU_THRESHOLD
     parser = argparse.ArgumentParser()
     parser.add_argument("--per-class", type=int, default=PER_CLASS)
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--fixed-threshold", type=float, default=None)
+    parser.add_argument("--iou", type=float, default=IOU_THRESHOLD)
     args = parser.parse_args()
+    IOU_THRESHOLD = args.iou
 
     random.seed(args.seed)
     payload, images, by_image, categories, candidates, _ = collect_candidates(

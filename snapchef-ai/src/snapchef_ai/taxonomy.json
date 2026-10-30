@@ -5,7 +5,9 @@
       "display_name": "Bread pudding",
       "type": "prepared",
       "category": "dessert",
-      "aliases": ["bread pudding"],
+      "aliases": [
+        "bread pudding"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -17,7 +19,9 @@
       "display_name": "Chicken curry",
       "type": "prepared",
       "category": "main",
-      "aliases": ["chicken curry"],
+      "aliases": [
+        "chicken curry"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -29,7 +33,11 @@
       "display_name": "Donuts",
       "type": "prepared",
       "category": "dessert",
-      "aliases": ["donut", "doughnut", "doughnuts"],
+      "aliases": [
+        "donut",
+        "doughnut",
+        "doughnuts"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -41,7 +49,9 @@
       "display_name": "Garlic bread",
       "type": "prepared",
       "category": "side",
-      "aliases": ["garlic bread"],
+      "aliases": [
+        "garlic bread"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -53,7 +63,9 @@
       "display_name": "Gnocchi",
       "type": "prepared",
       "category": "main",
-      "aliases": ["gnocchi"],
+      "aliases": [
+        "gnocchi"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -65,7 +77,10 @@
       "display_name": "Samosa",
       "type": "prepared",
       "category": "snack",
-      "aliases": ["samosa", "samosas"],
+      "aliases": [
+        "samosa",
+        "samosas"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -77,7 +92,9 @@
       "display_name": "Sashimi",
       "type": "prepared",
       "category": "main",
-      "aliases": ["sashimi"],
+      "aliases": [
+        "sashimi"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -89,7 +106,9 @@
       "display_name": "Seaweed salad",
       "type": "prepared",
       "category": "side",
-      "aliases": ["seaweed salad"],
+      "aliases": [
+        "seaweed salad"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -101,7 +120,10 @@
       "display_name": "Spaghetti carbonara",
       "type": "prepared",
       "category": "main",
-      "aliases": ["spaghetti carbonara", "carbonara"],
+      "aliases": [
+        "spaghetti carbonara",
+        "carbonara"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -113,7 +135,9 @@
       "display_name": "Takoyaki",
       "type": "prepared",
       "category": "snack",
-      "aliases": ["takoyaki"],
+      "aliases": [
+        "takoyaki"
+      ],
       "classifier": true,
       "detector_label": null,
       "score_threshold": 0.7,
@@ -125,11 +149,13 @@
       "display_name": "Apple",
       "type": "ingredient",
       "category": "fruit",
-      "aliases": ["apples"],
+      "aliases": [
+        "apples"
+      ],
       "classifier": false,
       "detector_label": "apple",
-      "score_threshold": 0.6,
-      "low_threshold": 0.3,
+      "score_threshold": 0.2115,
+      "low_threshold": 0.1057,
       "margin_threshold": 0.0,
       "experimental": false
     },
@@ -137,11 +163,13 @@
       "display_name": "Banana",
       "type": "ingredient",
       "category": "fruit",
-      "aliases": ["bananas"],
+      "aliases": [
+        "bananas"
+      ],
       "classifier": false,
       "detector_label": "banana",
-      "score_threshold": 0.6,
-      "low_threshold": 0.3,
+      "score_threshold": 0.4,
+      "low_threshold": 0.2,
       "margin_threshold": 0.0,
       "experimental": false
     },
@@ -149,11 +177,13 @@
       "display_name": "Orange",
       "type": "ingredient",
       "category": "fruit",
-      "aliases": ["oranges"],
+      "aliases": [
+        "oranges"
+      ],
       "classifier": false,
       "detector_label": "orange",
-      "score_threshold": 0.6,
-      "low_threshold": 0.3,
+      "score_threshold": 0.265,
+      "low_threshold": 0.1325,
       "margin_threshold": 0.0,
       "experimental": false
     },
@@ -164,8 +194,8 @@
       "aliases": [],
       "classifier": false,
       "detector_label": "broccoli",
-      "score_threshold": 0.6,
-      "low_threshold": 0.3,
+      "score_threshold": 0.246,
+      "low_threshold": 0.123,
       "margin_threshold": 0.0,
       "experimental": false
     },
@@ -173,11 +203,13 @@
       "display_name": "Carrot",
       "type": "ingredient",
       "category": "vegetable",
-      "aliases": ["carrots"],
+      "aliases": [
+        "carrots"
+      ],
       "classifier": false,
       "detector_label": "carrot",
-      "score_threshold": 0.6,
-      "low_threshold": 0.3,
+      "score_threshold": 0.3041,
+      "low_threshold": 0.152,
       "margin_threshold": 0.0,
       "experimental": true
     }

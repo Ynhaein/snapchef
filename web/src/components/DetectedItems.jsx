@@ -28,6 +28,9 @@ export default function DetectedItems({ items, onConfirm }) {
           </li>
         ))}
       </ul>
+      <p className="basket-hint">
+        Detection is experimental and may miss ingredients that are actually present. Confirm a candidate with Use, or add it manually in the basket below.
+      </p>
     </section>
   )
 }
