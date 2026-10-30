@@ -1,10 +1,7 @@
+import { coverTransform } from '@/lib/coverTransform'
 import { useEffect, useRef, useState } from 'react'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Cancel01Icon, CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 
 import { Button } from '@/components/ui/Button'
-
-import { coverTransform } from '@/lib/coverTransform'
 
 function iou(a, b) {
   const ix1 = Math.max(a[0], b[0])
@@ -21,13 +18,6 @@ function iou(a, b) {
 export default function CameraView({ videoRef, stream, detections, imageWidth, imageHeight, mirrored, onUse, onIgnore }) {
   const containerRef = useRef(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || !stream) return
-    video.srcObject = stream
-    video.play().catch(() => {})
-  }, [stream, videoRef])
   const tracksRef = useRef(new Map())
   const frameCounterRef = useRef(0)
   const [tracks, setTracks] = useState([])
@@ -41,6 +31,13 @@ export default function CameraView({ videoRef, stream, detections, imageWidth, i
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !stream) return
+    video.srcObject = stream
+    video.play().catch(() => {})
+  }, [stream, videoRef])
 
   useEffect(() => {
     frameCounterRef.current += 1
@@ -79,7 +76,6 @@ export default function CameraView({ videoRef, stream, detections, imageWidth, i
       tracksRef.current.set(trackId, track)
       newTracks.push(track)
     }
-    // remove stale
     for (const [id, t] of tracksRef.current) {
       if (fc - t.lastSeen > 2) tracksRef.current.delete(id)
     }
@@ -95,50 +91,61 @@ export default function CameraView({ videoRef, stream, detections, imageWidth, i
     .filter(Boolean)
 
   return (
-    <div ref={containerRef} className="camera-stage">
-      <video
-        ref={videoRef}
-        className={`camera-video ${mirrored ? 'is-mirrored' : ''}`}
-        playsInline
-        muted
-        autoPlay
-      />
-      <svg className="camera-overlay" viewBox={`0 0 ${size.w} ${size.h}`} preserveAspectRatio="none">
-        {boxes.map((b) => (
-          <rect
-            key={b.trackId}
-            x={b.rect.x}
-            y={b.rect.y}
-            width={b.rect.w}
-            height={b.rect.h}
-            className={`camera-box camera-box-${b.status}`}
-          />
-        ))}
-      </svg>
-      {boxes.map((b) => {
-        // panel position: prefer top-right of box, clamped inside container
-        const panelW = 160
-        let left = b.rect.x + b.rect.w + 8
-        if (left + panelW > size.w) left = b.rect.x - panelW - 8
-        if (left < 4) left = 4
-        let top = b.rect.y
-        if (top + 110 > size.h) top = Math.max(4, size.h - 120)
-        const displayLeft = mirrored ? size.w - left - panelW : left
-        return (
-          <div key={'panel-' + b.trackId} className="camera-panel" style={{ left: displayLeft, top }}>
-            <p className="camera-panel-title">{b.display_name}</p>
-            <p className="camera-panel-meta">{b.type || 'ingredient'} · Detection Score {Number(b.detection_score).toFixed(2)}</p>
-            <div className="camera-panel-actions">
-              <Button size="sm" className="proof-button proof-button-primary" onClick={() => onUse?.(b.label)}>
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} /> Use
-              </Button>
-              <Button size="sm" className="proof-button proof-button-quiet" onClick={() => onIgnore?.(b.label)}>
-                <HugeiconsIcon icon={Cancel01Icon} /> Ignore
-              </Button>
+    <>
+      <div ref={containerRef} className="camera-stage">
+        <video
+          ref={videoRef}
+          className={`camera-video ${mirrored ? 'is-mirrored' : ''}`}
+          playsInline
+          muted
+          autoPlay
+        />
+        <svg className="camera-overlay" viewBox={`0 0 ${size.w} ${size.h}`} preserveAspectRatio="none">
+          {boxes.map((b) => (
+            <rect
+              key={b.trackId}
+              x={b.rect.x}
+              y={b.rect.y}
+              width={b.rect.w}
+              height={b.rect.h}
+              className={`camera-box camera-box-${b.status}`}
+            />
+          ))}
+        </svg>
+        {boxes.map((b) => {
+          const panelW = Math.min(160, size.w * 0.4)
+          let left = b.rect.x + b.rect.w + 8
+          if (left + panelW > size.w) left = b.rect.x - panelW - 8
+          if (left < 4) left = 4
+          let top = b.rect.y
+          if (top + 70 > size.h) top = Math.max(4, size.h - 80)
+          const displayLeft = mirrored ? size.w - left - panelW : left
+          return (
+            <div key={'panel-' + b.trackId} className="camera-panel" style={{ left: displayLeft, top, width: panelW }}>
+              <p className="camera-panel-title">{b.display_name}</p>
+              <p className="camera-panel-meta">Detection Score {Number(b.detection_score).toFixed(2)}</p>
             </div>
-          </div>
-        )
-      })}
-    </div>
+          )
+        })}
+        {boxes.length === 0 && <div className="camera-empty-hint">Looking for ingredients…</div>}
+      </div>
+      {boxes.length > 0 && (
+        <div className="camera-actions">
+          {boxes.map((b) => (
+            <div key={'act-' + b.trackId} className="camera-action-row">
+              <span className="camera-action-label">{b.display_name} ({Number(b.detection_score).toFixed(2)})</span>
+              <div className="camera-panel-actions">
+                <Button size="sm" className="proof-button proof-button-primary" onClick={() => onUse?.(b.label)}>
+                  Use
+                </Button>
+                <Button size="sm" className="proof-button proof-button-quiet" onClick={() => onIgnore?.(b.label)}>
+                  Ignore
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   )
 }

@@ -1661,6 +1661,7 @@
   @media (max-width: 639px) {
     .site-header-inner {
       gap: 0.75rem;
+      padding-inline: 1rem;
     }
 
     .header-nav {
@@ -1678,7 +1679,7 @@
     }
 
     .page-shell {
-      padding-inline: 1rem;
+      padding-inline: 1.5rem;
     }
 
     .hero-band {
@@ -1763,8 +1764,9 @@
   .card-tabs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.5rem;
-    margin: 1.5rem 0;
+    gap: 0.625rem;
+    margin: 1.5rem 0 1.25rem;
+    padding: 0 0.25rem;
   }
 
   .card-tab {
@@ -1850,7 +1852,8 @@
   .scan-workspace {
     display: grid;
     gap: 1.5rem;
-    padding-bottom: 6.5rem;
+    padding: 0 0 6.5rem;
+    padding-inline: 0;
   }
 
   .scan-intro {
@@ -1971,4 +1974,55 @@
   .camera-panel-actions {
     display: flex;
     gap: 0.4rem;
+  }
+
+  .camera-empty-hint {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.35rem 0.75rem;
+    background: rgba(17, 42, 43, 0.75);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    border: 1px solid var(--rule-strong);
+  }
+
+  .camera-actions {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--rule-strong);
+    background: var(--muted);
+  }
+
+  .camera-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .camera-action-label {
+    font-size: 0.8rem;
+    color: var(--paper);
+  }
+
+  @media (max-width: 639px) {
+    .camera-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+      z-index: 35;
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+      max-height: 35vh;
+      overflow-y: auto;
+    }
   }
