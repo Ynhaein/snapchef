@@ -70,7 +70,32 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/recipes/{recipe_id}")
+def recipe_detail(recipe_id: int):
+    recipe = get_engine().get_recipe(recipe_id)
+    if recipe is None:
+        raise HTTPException(404, "Recipe not found.")
+    return {"status": "success", "recipe": recipe}
+
+
 @app.get("/api/classes")
+def supported_classes():
+    labels = load_taxonomy()
+    return {
+        "classes": get_recommender().class_names,
+        "items": [
+            {
+                "name": name,
+                "display_name": label.display_name,
+                "type": label.type,
+                "category": label.category,
+                "experimental": label.experimental,
+            }
+            for name, label in labels.items()
+        ],
+    }
+
+
 def supported_classes():
     labels = load_taxonomy()
     return {

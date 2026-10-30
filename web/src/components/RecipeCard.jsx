@@ -1,6 +1,8 @@
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Clock01Icon, StarIcon } from '@hugeicons/core-free-icons'
 
+import { Link } from 'react-router-dom'
+
 import { Button } from '@/components/ui/Button'
 import { formatDuration } from '@/lib/Formatters'
 
@@ -22,7 +24,7 @@ export default function RecipeCard({ recipe, onOpen }) {
           <span><HugeiconsIcon icon={StarIcon} /> {recipe.rating ?? 'Not rated'}{recipe.review_count != null ? ` (${recipe.review_count})` : ''}</span>
           <span><HugeiconsIcon icon={Clock01Icon} /> {formatDuration(recipe.total_time)}</span>
         </div>
-        <h3 className="recipe-card-title">{recipe.name}</h3>
+        <h3 className="recipe-card-title"><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></h3>
         <p className="recipe-card-description">{recipe.description || 'No description available.'}</p>
         <div className="recipe-card-footer">
           <small>{recipe.servings ? `${recipe.servings} servings` : 'Recipe details on open'}</small>

@@ -32,6 +32,14 @@ export async function detectFood(blob, signal) {
   }
   return payload
 }
+export async function fetchRecipe(recipeId, signal) {
+  const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`, { signal })
+  const payload = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new Error(payload.detail ?? 'Could not load this recipe.')
+  }
+  return payload.recipe
+}
 export async function recommendRecipes(ingredients, signal) {
   const response = await fetch(`${API_BASE_URL}/api/recommend`, {
     method: 'POST',

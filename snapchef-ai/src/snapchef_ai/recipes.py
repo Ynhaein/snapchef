@@ -314,11 +314,32 @@ class RecipeEngine:
             "recommendations": recommendations,
         }
 
+    def get_recipe(self, recipe_id: int) -> dict[str, Any] | None:
+        if int(recipe_id) not in set(self.recipe_ids.tolist()):
+            return None
+        rows = self._metadata([recipe_id])
+        row = rows.get(recipe_id)
+        if row is None:
+            return None
+        return self._format(
+            row,
+            score=0.0,
+            coverage=0.0,
+            main=0.0,
+            supply=0.0,
+            missing=0,
+            terms=[],
+        )
+
     def _metadata(self, recipe_ids: list[int]) -> dict[int, dict[str, Any]]:
         if not recipe_ids:
             return {}
-        # recipe_ids is sorted, so a row position maps to a small parquet row group.
-        positions = self.meta_positions[np.searchsorted(self.recipe_ids, recipe_ids)]
+        present = [
+            rid for rid in recipe_ids if int(rid) in set(self.recipe_ids.tolist())
+        ]
+        if not present:
+            return {}
+        positions = self.meta_positions[np.searchsorted(self.recipe_ids, present)]
         groups = sorted(
             {int(position) // self.meta_row_group for position in positions}
         )
@@ -329,7 +350,7 @@ class RecipeEngine:
             .collect()
             for group in groups
         ]
-        frame = pl.concat(frames).filter(pl.col("RecipeId").is_in(recipe_ids))
+        frame = pl.concat(frames).filter(pl.col("RecipeId").is_in(present))
         return {int(row["RecipeId"]): row for row in frame.to_dicts()}
 
     def _format(
