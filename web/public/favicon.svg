@@ -1,5 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" rx="12" fill="#112a2b"/>
-  <path d="M18 46 L32 14 L46 46 Z" fill="#e9573f"/>
-  <circle cx="32" cy="34" r="6" fill="#f0c05b"/>
+  <!-- chef hat (toque) -->
+  <ellipse cx="32" cy="22" rx="18" ry="12" fill="#f5f0e4"/>
+  <rect x="16" y="22" width="32" height="8" fill="#f5f0e4"/>
+  <rect x="18" y="30" width="28" height="4" rx="1" fill="#e9573f"/>
+  <!-- band -->
+  <rect x="14" y="34" width="36" height="6" rx="2" fill="#f5f0e4"/>
+  <!-- handle/accent -->
+  <circle cx="32" cy="46" r="4" fill="#f0c05b"/>
 </svg>
