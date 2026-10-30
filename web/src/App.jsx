@@ -9,6 +9,8 @@ import DetectedItems from '@/components/DetectedItems'
 import IngredientBasket from '@/components/IngredientBasket'
 import ScanPage from '@/pages/ScanPage'
 import RecipeDetails from '@/pages/RecipeDetails'
+import BasketPage from '@/pages/BasketPage'
+import RecipesPage from '@/pages/RecipesPage'
 import RecipeCollection from '@/components/RecipeCollection'
 import RecipeDialog from '@/components/RecipeDialog'
 import SupportedFoods from '@/components/SupportedFoods'
@@ -169,7 +171,9 @@ export default function App() {
       <Route element={<MainLayout onUpload={() => document.querySelector('input[type="file"]')?.click()} />}>
         <Route index element={<SnapChefPage />} />
         <Route path="scan" element={<ScanPage />} />
+        <Route path="recipes" element={<RecipesPage />} />
         <Route path="recipes/:id" element={<RecipeDetails />} />
+        <Route path="basket" element={<BasketPage />} />
       </Route>
     </Routes>
   )
