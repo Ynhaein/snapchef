@@ -10,7 +10,7 @@ import { useCamera } from '@/hooks/useCamera'
 import { useDetectionPolling } from '@/hooks/useDetectionPolling'
 
 export default function ScanPage() {
-  const { videoRef, status, error, devices, deviceId, start, stop, switchCamera } = useCamera()
+  const { videoRef, status, error, devices, deviceId, stream, start, stop, switchCamera } = useCamera()
   const canvasRef = useRef(null)
   const [mirrored, setMirrored] = useState(false)
   const [detections, setDetections] = useState([])
@@ -103,6 +103,7 @@ export default function ScanPage() {
             </div>
             <CameraView
               videoRef={videoRef}
+              stream={stream}
               detections={detections}
               imageWidth={imageDims.w}
               imageHeight={imageDims.h}

@@ -18,9 +18,16 @@ function iou(a, b) {
   return union > 0 ? inter / union : 0
 }
 
-export default function CameraView({ videoRef, detections, imageWidth, imageHeight, mirrored, onUse, onIgnore }) {
+export default function CameraView({ videoRef, stream, detections, imageWidth, imageHeight, mirrored, onUse, onIgnore }) {
   const containerRef = useRef(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !stream) return
+    video.srcObject = stream
+    video.play().catch(() => {})
+  }, [stream, videoRef])
   const tracksRef = useRef(new Map())
   const frameCounterRef = useRef(0)
   const [tracks, setTracks] = useState([])

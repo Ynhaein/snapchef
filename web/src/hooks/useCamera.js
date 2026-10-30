@@ -7,12 +7,14 @@ export function useCamera() {
   const [error, setError] = useState('')
   const [devices, setDevices] = useState([])
   const [deviceId, setDeviceId] = useState('')
+  const [stream, setStream] = useState(null)
 
   const stop = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
       streamRef.current = null
     }
+    setStream(null)
     if (videoRef.current) videoRef.current.srcObject = null
     setStatus('idle')
   }, [])
@@ -34,6 +36,7 @@ export function useCamera() {
       }
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
+      setStream(stream)
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         await videoRef.current.play().catch(() => {})
@@ -77,6 +80,7 @@ export function useCamera() {
         streamRef.current.getTracks().forEach((t) => t.stop())
         streamRef.current = null
       }
+      setStream(null)
     }
   }, [])
 
@@ -88,5 +92,5 @@ export function useCamera() {
     return () => document.removeEventListener('visibilitychange', handleVisibility)
   }, [stop])
 
-  return { videoRef, status, error, devices, deviceId, start, stop, switchCamera }
+  return { videoRef, status, error, devices, deviceId, stream, start, stop, switchCamera }
 }
