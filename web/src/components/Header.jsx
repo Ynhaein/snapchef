@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/Button'
 const TABS = [
   { to: '/', label: 'Home', desc: 'Discover SnapChef', icon: ChefHatIcon },
   { to: '/scan', label: 'Scan', desc: 'Live camera detection', icon: Camera01Icon },
-  { to: '/recipes', label: 'Recipes', desc: 'Recommendations', icon: Upload04Icon },
-  { to: '/basket', label: 'Basket', desc: 'Your ingredients', icon: ShoppingBasket01Icon },
+  { to: '/basket', label: 'Basket', desc: 'Ingredients & recipes', icon: ShoppingBasket01Icon },
 ]
 
 export default function Header({ onUpload }) {

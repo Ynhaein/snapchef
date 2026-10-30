@@ -1763,7 +1763,7 @@
 
   .card-tabs {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.625rem;
     margin: 1.5rem 0 1.25rem;
     padding: 0;
@@ -1805,7 +1805,7 @@
     left: 0;
     right: 0;
     display: none;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 0;
     background: var(--ink);
     border-top: 1px solid var(--rule-strong);
@@ -1839,7 +1839,7 @@
       padding-bottom: 5rem;
     }
     .card-tabs {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
