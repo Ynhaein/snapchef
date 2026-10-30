@@ -17,3 +17,19 @@ export async function analyzeFood(file, signal) {
 
   return payload
 }
+
+export async function recommendRecipes(ingredients, signal) {
+  const response = await fetch(`${API_BASE_URL}/api/recommend`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ingredients }),
+    signal,
+  })
+  const payload = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(payload.detail ?? 'SnapChef could not find recipes for these ingredients.')
+  }
+
+  return payload
+}

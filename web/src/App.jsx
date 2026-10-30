@@ -5,6 +5,8 @@ import { Alert02Icon } from '@hugeicons/core-free-icons'
 
 import AnalysisResult from '@/components/AnalysisResult'
 import AnalysisSkeleton from '@/components/AnalysisSkeleton'
+import DetectedItems from '@/components/DetectedItems'
+import IngredientBasket from '@/components/IngredientBasket'
 import RecipeCollection from '@/components/RecipeCollection'
 import RecipeDialog from '@/components/RecipeDialog'
 import SupportedFoods from '@/components/SupportedFoods'
@@ -21,6 +23,7 @@ function SnapChefPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [activeRecipe, setActiveRecipe] = useState(null)
+  const [basket, setBasket] = useState([])
   const inputRef = useRef(null)
   const requestRef = useRef(null)
 
@@ -71,6 +74,8 @@ function SnapChefPage() {
     }
   }
 
+  const readIsActive = status === 'known' || status === 'unknown'
+
   return (
     <main id="top" className="page-shell">
       <section className="hero-band">
@@ -80,9 +85,9 @@ function SnapChefPage() {
             Upload a dish and SnapChef will find the closest supported food, then point you toward a recipe for the kitchen.
           </p>
           <div className="hero-rail" aria-label="SnapChef workflow">
-            <span className="rail-step is-active">Upload</span>
-            <span className="rail-line" />
-            <span className="rail-step">Read</span>
+            <span className={`rail-step ${readIsActive ? 'is-complete' : 'is-active'}`}>Upload</span>
+            <span className={`rail-line ${readIsActive ? 'is-complete' : ''}`} />
+            <span className={`rail-step ${readIsActive ? 'is-active' : ''}`}>Read</span>
             <span className="rail-line" />
             <span className="rail-step">Cook</span>
           </div>
@@ -130,6 +135,12 @@ function SnapChefPage() {
           )}
           {status === 'analyzing' && <AnalysisSkeleton />}
           {result && status !== 'analyzing' && <AnalysisResult prediction={result.prediction} />}
+          {result?.detected_items?.length > 0 && (
+            <DetectedItems
+              items={result.detected_items}
+              onConfirm={(label) => setBasket((current) => (current.includes(label) ? current : [...current, label]))}
+            />
+          )}
           {result?.prediction.is_known && (
             <RecipeCollection foodName={result.prediction.label} recipes={result.recipes} onOpenRecipe={setActiveRecipe} />
           )}
@@ -144,6 +155,7 @@ function SnapChefPage() {
           )}
         </section>
       </div>
+      <IngredientBasket ingredients={basket} onChange={setBasket} onOpenRecipe={setActiveRecipe} />
       <RecipeDialog recipe={activeRecipe} onClose={() => setActiveRecipe(null)} />
     </main>
   )

@@ -1,0 +1,124 @@
+{
+  "calibration": {
+    "fraction": 0.4,
+    "per_class_calibration_images": {
+      "apple": 10,
+      "banana": 20,
+      "orange": 16,
+      "broccoli": 18,
+      "carrot": 11
+    },
+    "per_class_test_images": {
+      "apple": 17,
+      "banana": 30,
+      "orange": 25,
+      "broccoli": 29,
+      "carrot": 17
+    },
+    "thresholds": {
+      "apple": 0.6,
+      "banana": 0.6,
+      "orange": 0.6,
+      "broccoli": 0.6,
+      "carrot": 0.6
+    },
+    "low_thresholds": {
+      "apple": 0.3,
+      "banana": 0.3,
+      "orange": 0.3,
+      "broccoli": 0.3,
+      "carrot": 0.3
+    }
+  },
+  "test": {
+    "apple": {
+      "images": 17,
+      "ground_truth_boxes": 56,
+      "true_positives": 0,
+      "false_positives": 14,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "detection_rate": 0.0,
+      "fp_per_image": 0.8235,
+      "ece": 0.7704,
+      "multi_object": {
+        "images": 8,
+        "both_found_rate": 0.0,
+        "mean_count_error": 5.375
+      }
+    },
+    "banana": {
+      "images": 30,
+      "ground_truth_boxes": 96,
+      "true_positives": 7,
+      "false_positives": 22,
+      "precision": 0.2414,
+      "recall": 0.0729,
+      "f1": 0.112,
+      "detection_rate": 0.2333,
+      "fp_per_image": 0.7333,
+      "ece": 0.5856,
+      "multi_object": {
+        "images": 15,
+        "both_found_rate": 0.0,
+        "mean_count_error": 4.2667
+      }
+    },
+    "orange": {
+      "images": 25,
+      "ground_truth_boxes": 70,
+      "true_positives": 5,
+      "false_positives": 43,
+      "precision": 0.1042,
+      "recall": 0.0714,
+      "f1": 0.0847,
+      "detection_rate": 0.2,
+      "fp_per_image": 1.72,
+      "ece": 0.7326,
+      "multi_object": {
+        "images": 10,
+        "both_found_rate": 0.0,
+        "mean_count_error": 3.7
+      }
+    },
+    "broccoli": {
+      "images": 29,
+      "ground_truth_boxes": 122,
+      "true_positives": 1,
+      "false_positives": 28,
+      "precision": 0.0345,
+      "recall": 0.0082,
+      "f1": 0.0132,
+      "detection_rate": 0.0345,
+      "fp_per_image": 0.9655,
+      "ece": 0.7551,
+      "multi_object": {
+        "images": 23,
+        "both_found_rate": 0.0,
+        "mean_count_error": 4.1304
+      }
+    },
+    "carrot": {
+      "images": 17,
+      "ground_truth_boxes": 80,
+      "true_positives": 1,
+      "false_positives": 2,
+      "precision": 0.3333,
+      "recall": 0.0125,
+      "f1": 0.0241,
+      "detection_rate": 0.0588,
+      "fp_per_image": 0.1176,
+      "ece": 0.6856,
+      "multi_object": {
+        "images": 14,
+        "both_found_rate": 0.0,
+        "mean_count_error": 5.3571
+      }
+    }
+  },
+  "multi_object_overall": {
+    "images": 70,
+    "both_found_rate": 0.0
+  }
+}

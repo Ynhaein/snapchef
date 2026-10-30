@@ -1,0 +1,17 @@
+{
+  "butter": ["margarine", "vegetable oil"],
+  "milk": ["almond milk", "soy milk", "coconut milk"],
+  "egg": ["flax egg", "applesauce"],
+  "sugar": ["honey", "maple syrup"],
+  "brown sugar": ["white sugar with molasses"],
+  "soy sauce": ["tamari", "coconut aminos"],
+  "lemon juice": ["lime juice", "white vinegar"],
+  "garlic": ["garlic powder"],
+  "onion": ["shallot", "leek"],
+  "chicken": ["turkey", "firm tofu"],
+  "beef": ["pork", "mushrooms"],
+  "sour cream": ["greek yogurt"],
+  "mayonnaise": ["greek yogurt"],
+  "cornstarch": ["arrowroot starch", "all-purpose flour"],
+  "honey": ["maple syrup"]
+}

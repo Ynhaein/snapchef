@@ -54,4 +54,28 @@ describe('SnapChef application', () => {
     await waitFor(() => expect(screen.getByText('Choose a valid image and try again.')).toBeInTheDocument())
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
   })
+
+  it('adds and removes ingredients in the manual basket', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: 'success',
+        ingredients: ['apple', 'banana'],
+        unknown: [],
+        recommendations: [],
+      }),
+    })
+
+    render(<MemoryRouter><App /></MemoryRouter>)
+    fireEvent.change(screen.getByLabelText('Add an ingredient'), { target: { value: 'apple' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    expect(screen.getByRole('button', { name: 'Remove apple' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Find recipes' }))
+    await waitFor(() => expect(globalThis.fetch).toHaveBeenCalledOnce())
+    expect(globalThis.fetch.mock.calls[0][0]).toContain('/api/recommend')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove apple' }))
+    expect(screen.queryByRole('button', { name: 'Remove apple' })).not.toBeInTheDocument()
+  })
 })

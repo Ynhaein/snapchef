@@ -24,6 +24,9 @@ dependencies = [
 [project.scripts]
 snapchef-ai = "snapchef_ai:main"
 
+[dependency-groups]
+dev = ["httpx>=0.28.1"]
+
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
