@@ -8,9 +8,8 @@ import AnalysisSkeleton from '@/components/AnalysisSkeleton'
 import DetectedItems from '@/components/DetectedItems'
 import IngredientBasket from '@/components/IngredientBasket'
 import ScanPage from '@/pages/ScanPage'
-import RecipeDetails from '@/pages/RecipeDetails'
 import BasketPage from '@/pages/BasketPage'
-import RecipesPage from '@/pages/RecipesPage'
+import RecipeDetails from '@/pages/RecipeDetails'
 import RecipeCollection from '@/components/RecipeCollection'
 import RecipeDialog from '@/components/RecipeDialog'
 import SupportedFoods from '@/components/SupportedFoods'
@@ -20,14 +19,13 @@ import { Button } from '@/components/ui/Button'
 import MainLayout from '@/layouts/MainLayout'
 import { analyzeFood } from '@/lib/ApiClient'
 
-function SnapChefPage() {
+function SnapChefPage({ basket, setBasket }) {
   const [file, setFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [status, setStatus] = useState('idle')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [activeRecipe, setActiveRecipe] = useState(null)
-  const [basket, setBasket] = useState([])
   const inputRef = useRef(null)
   const requestRef = useRef(null)
 
@@ -166,14 +164,15 @@ function SnapChefPage() {
 }
 
 export default function App() {
+  const [basket, setBasket] = useState([])
   return (
     <Routes>
       <Route element={<MainLayout onUpload={() => document.querySelector('input[type="file"]')?.click()} />}>
-        <Route index element={<SnapChefPage />} />
-        <Route path="scan" element={<ScanPage />} />
-        <Route path="recipes" element={<RecipesPage />} />
+        <Route index element={<SnapChefPage basket={basket} setBasket={setBasket} />} />
+        <Route path="scan" element={<ScanPage basket={basket} setBasket={setBasket} />} />
+        <Route path="recipes" element={<BasketPage basket={basket} setBasket={setBasket} />} />
         <Route path="recipes/:id" element={<RecipeDetails />} />
-        <Route path="basket" element={<BasketPage />} />
+        <Route path="basket" element={<BasketPage basket={basket} setBasket={setBasket} />} />
       </Route>
     </Routes>
   )

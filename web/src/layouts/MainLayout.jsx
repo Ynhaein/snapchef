@@ -4,6 +4,7 @@ import { Camera01Icon, Home01Icon, ShoppingBasket01Icon, ChefHatIcon } from '@hu
 
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 const BOTTOM_TABS = [
   { to: '/', label: 'Home', icon: Home01Icon, end: true },
@@ -17,7 +18,9 @@ const MainLayout = ({ onUpload }) => {
     <div className="site-shell">
       <Header onUpload={onUpload} />
       <div className="site-main">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </div>
       <Footer />
       <nav className="bottom-nav" aria-label="Mobile navigation">

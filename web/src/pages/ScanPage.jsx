@@ -9,13 +9,12 @@ import { Button } from '@/components/ui/Button'
 import { useCamera } from '@/hooks/useCamera'
 import { useDetectionPolling } from '@/hooks/useDetectionPolling'
 
-export default function ScanPage() {
+export default function ScanPage({ basket = [], setBasket = () => {} }) {
   const { videoRef, status, error, devices, deviceId, stream, start, stop, switchCamera } = useCamera()
   const canvasRef = useRef(null)
   const [mirrored, setMirrored] = useState(false)
   const [detections, setDetections] = useState([])
   const [imageDims, setImageDims] = useState({ w: 0, h: 0 })
-  const [basket, setBasket] = useState([])
   const { isAnalyzing, error: detectionError } = useDetectionPolling(
     videoRef,
     canvasRef,
