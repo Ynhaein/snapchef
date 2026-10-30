@@ -14,6 +14,7 @@ export default function Header({ onUpload }) {
         <p className="header-context" aria-label="SnapChef workflow">photo <strong>→</strong> reading <strong>→</strong> recipe</p>
         <nav className="header-nav" aria-label="Main navigation">
           <a href="#analyze">Analyze</a>
+          <a href="/scan">Scan</a>
           <a href="#supported-foods">Supported foods</a>
         </nav>
         <Button className="proof-button proof-button-primary" size="sm" onClick={onUpload}>

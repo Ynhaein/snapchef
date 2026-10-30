@@ -149,6 +149,9 @@ async def predict_recipe(file: UploadFile = File(...)):
             dict[str, Any]
         ] = []  # candidate suggester: never auto-recommend unconfirmed visual predictions
 
+        with Image.open(temporary_path) as image:
+            image_width, image_height = image.size
+
         return {
             "status": "success",
             "prediction": result["prediction"],
@@ -157,6 +160,62 @@ async def predict_recipe(file: UploadFile = File(...)):
             "recommendations": recommendations,
             "path": route["path"],
             "needs_confirmation": route["needs_confirmation"],
+            "image_width": image_width,
+            "image_height": image_height,
+        }
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
+@app.post("/api/detect")
+async def detect_items(file: UploadFile = File(...)):
+    """Run detector + classifier only (no recipe engine) for live camera frames."""
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(400, "Choose a JPEG, PNG, or WebP image.")
+    payload = await file.read(MAX_UPLOAD_BYTES + 1)
+    await file.close()
+    if not payload:
+        raise HTTPException(400, "The uploaded image is empty.")
+    if len(payload) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, "Choose an image smaller than 5 MB.")
+
+    temporary_path: Path | None = None
+    try:
+        with NamedTemporaryFile(
+            delete=False, suffix=ALLOWED_IMAGE_TYPES[file.content_type]
+        ) as temp:
+            temp.write(payload)
+            temporary_path = Path(temp.name)
+        try:
+            with Image.open(temporary_path) as image:
+                image.verify()
+        except (UnidentifiedImageError, OSError) as error:
+            raise HTTPException(400, "Choose a valid image and try again.") from error
+
+        with Image.open(temporary_path) as image:
+            rgb = image.convert("RGB")
+            image_width, image_height = image.size
+
+        detected_items, result = await asyncio.gather(
+            asyncio.to_thread(get_detector().items, rgb),
+            asyncio.to_thread(get_recommender().classify_image, temporary_path),
+        )
+        labels = load_taxonomy()
+        route = route_prediction(
+            detected_items,
+            result.to_dict() if hasattr(result, "to_dict") else result,
+            labels,
+        )
+
+        return {
+            "status": "success",
+            "prediction": result.to_dict() if hasattr(result, "to_dict") else result,
+            "detected_items": detected_items,
+            "path": route["path"],
+            "needs_confirmation": route["needs_confirmation"],
+            "image_width": image_width,
+            "image_height": image_height,
         }
     finally:
         if temporary_path is not None:

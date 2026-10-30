@@ -50,8 +50,8 @@ class IngredientDetector:
     def detect(
         self, image: Image.Image, min_score: float = MIN_DETECTION_SCORE
     ) -> list[Detection]:
-        image = image.convert("RGB").resize((320, 320))
-        tensor = self.transforms(image)
+        rgb = image.convert("RGB")
+        tensor = self.transforms(rgb)
         with torch.inference_mode():
             output = self.model([tensor])[0]
 
@@ -109,7 +109,7 @@ class IngredientDetector:
             payload["box"] = [round(value, 4) for value in detection.box]
             items.append(payload)
         items.sort(key=lambda item: (-item["detection_score"], item["label"]))
-        return items
+        return [item for item in items if item["status"] != "ignored"]
 
 
 if __name__ == "__main__":

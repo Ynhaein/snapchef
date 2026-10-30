@@ -7,6 +7,7 @@ import AnalysisResult from '@/components/AnalysisResult'
 import AnalysisSkeleton from '@/components/AnalysisSkeleton'
 import DetectedItems from '@/components/DetectedItems'
 import IngredientBasket from '@/components/IngredientBasket'
+import ScanPage from '@/pages/ScanPage'
 import RecipeCollection from '@/components/RecipeCollection'
 import RecipeDialog from '@/components/RecipeDialog'
 import SupportedFoods from '@/components/SupportedFoods'
@@ -141,7 +142,7 @@ function SnapChefPage() {
               onConfirm={(label) => setBasket((current) => (current.includes(label) ? current : [...current, label]))}
             />
           )}
-          {result?.prediction.is_known && (
+          {result?.prediction.is_known && result?.path === 'dish' && (
             <RecipeCollection foodName={result.prediction.label} recipes={result.recipes} onOpenRecipe={setActiveRecipe} />
           )}
           {!result && status === 'idle' && (
@@ -166,6 +167,7 @@ export default function App() {
     <Routes>
       <Route element={<MainLayout onUpload={() => document.querySelector('input[type="file"]')?.click()} />}>
         <Route index element={<SnapChefPage />} />
+        <Route path="scan" element={<ScanPage />} />
       </Route>
     </Routes>
   )

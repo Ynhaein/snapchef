@@ -1705,3 +1705,129 @@
     }
   }
 }
+
+  .scan-workspace {
+    display: grid;
+    gap: 1.5rem;
+    padding-bottom: 6.5rem;
+  }
+
+  .scan-intro {
+    max-width: 34rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .scan-status {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+  }
+
+  .scan-error {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--destructive);
+  }
+
+  .scan-error-inline {
+    color: var(--destructive);
+    font-size: 0.75rem;
+  }
+
+  .scan-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .scan-live {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scan-analyzing {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .scan-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .camera-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 70vh;
+    overflow: hidden;
+    background: var(--ink);
+    border: 1px solid var(--rule-strong);
+  }
+
+  .camera-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .camera-video.is-mirrored {
+    transform: scaleX(-1);
+  }
+
+  .camera-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .camera-box {
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .camera-box-detected {
+    stroke: var(--secondary);
+  }
+
+  .camera-box-uncertain {
+    stroke: var(--accent);
+  }
+
+  .camera-panel {
+    position: absolute;
+    width: 160px;
+    padding: 0.5rem 0.6rem;
+    background: rgba(17, 42, 43, 0.92);
+    border: 1px solid var(--rule-strong);
+    color: var(--paper);
+    font-size: 0.75rem;
+    z-index: 2;
+  }
+
+  .camera-panel-title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .camera-panel-meta {
+    margin: 0.25rem 0 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.7rem;
+  }
+
+  .camera-panel-actions {
+    display: flex;
+    gap: 0.4rem;
+  }

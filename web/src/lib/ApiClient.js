@@ -18,6 +18,20 @@ export async function analyzeFood(file, signal) {
   return payload
 }
 
+export async function detectFood(blob, signal) {
+  const formData = new FormData()
+  formData.append('file', blob, 'frame.jpg')
+  const response = await fetch(`${API_BASE_URL}/api/detect`, {
+    method: 'POST',
+    body: formData,
+    signal,
+  })
+  const payload = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new Error(payload.detail ?? 'SnapChef could not analyze this frame.')
+  }
+  return payload
+}
 export async function recommendRecipes(ingredients, signal) {
   const response = await fetch(`${API_BASE_URL}/api/recommend`, {
     method: 'POST',
